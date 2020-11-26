@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ .title }}</title>
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+<body>
+    <div id="app">
+        <div id="main">
+            <h1 id="title"><a href="javascript:(
+    async () => {
+        if (!window.shorturl) {
+            const poop = await fetch('https://oez.cc',{
+                method:'POST',
+                body:JSON.stringify({url:encodeURI(location.href)}),
+                headers:{'content-type': 'application/json'},
+                mode:'cors',
+                credentials: 'omit',
+                redirect: 'follow',
+                referrer: 'no-referrer',
+            }).then(x => x.json());
+            window.shorturl = poop.id ? 'https://oez.cc/'+poop.id : poop.msg;
+        }
+        console.log(window.shorturl);
+        const elements = {};
+        elements.container = document.createElement('div');
+        elements.container.style.cssText = 'z-index:10000;';
+        elements.modal = document.createElement('div');
+        elements.modal.style.cssText = 'z-index:10000;position:fixed;box-shadow: 0 5px 15px -5px rgba(0,0,0,0.8);display:inline-block;color:black;padding:24px;background-color:white;bottom:12px;left:12px;border-radius:12px;font-size:18px;transition:all 250ms ease;opacity:0';
+        elements.a = document.createElement('a');
+        elements.a.innerText = window.shorturl;
+        elements.a.href = window.shorturl;
+        elements.a.addEventListener('click',(e)=>{e.preventDefault();});
+        elements.p = document.createElement('p');
+        elements.p.style.cssText = 'padding:0;margin:0;';
+        elements.p.innerHTML = `<br>功能由 <a href='https://oez.cc'> OEZ </a>提供`;
+        elements.modal.appendChild(elements.a);
+        elements.modal.appendChild(elements.p);
+        elements.container.appendChild(elements.modal);
+        const body = document.querySelector('body');
+        body.appendChild(elements.container);
+        requestAnimationFrame(()=>{
+            requestAnimationFrame(()=>{
+                elements.modal.style.opacity = 1;
+            })});
+            setTimeout(()=>{
+                elements.modal.style.opacity = 0;
+                setTimeout(()=>{
+                    elements.container.remove();
+                },260);
+            },5000);
+        }
+)();" id="short" onclick="return false">{{ .title }}</a></h1>
+            {{ if .id }}
+                <div id="urlBox" onclick="copyToClip()">
+                    <h2 id="url">https://oez.cc/{{ .id }}</h2>
+                </div>
+                <strong id="tip">Copied.</strong>
+            {{else}}
+                <form action="/" method="post">
+                    <label>
+                        <input name="url" placeholder="http[s]://">
+                    </label>
+                </form>
+            {{end}}
+        </div>
+        <div id="footer">
+            <p>Copyright ©2020
+                <a href="https://github.com/Xhofe/OEZ">OEZ</a>
+                , All Rights Reserved.
+            </p>
+        </div>
+    </div>
+<script>
+    const copyToClip=() => {
+        let aux = document.createElement("textarea");
+        // aux.setAttribute("value", content);
+        aux.value=document.querySelector("#url").textContent;
+        document.body.appendChild(aux);
+        aux.select();
+        document.execCommand("copy");
+        document.body.removeChild(aux);
+        document.querySelector("#tip").style.visibility="visible";
+        setTimeout(()=>{
+            document.querySelector("#tip").style.visibility="hidden"
+        },1500);
+    };
+
+</script>
+</body>
+<style>
+    html{
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    body{
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        /*background-image: url("https://p1.qhimg.com/bdr/__100/t012d12625da4047e75.jpg");*/
+    }
+    #app{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    #main{
+        height: 80%;
+        width: 100%;
+        display: flex;
+        display: -webkit-flex; /* Safari */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    #urlBox{
+        width: min(640px,80vw);
+        cursor: pointer;
+        border: 2px solid #d6f0ff;
+        border-radius: 30px;
+        display: flex;
+        justify-content: center;
+    }
+    #title{
+        cursor: move;
+    }
+    #short{
+        cursor: move;
+        color: azure;
+    }
+    #short:hover{
+        color: lightblue;
+    }
+    #url{
+        color: cornsilk;
+    }
+    #footer{
+        height: 10%;
+        color: rgba(240, 248, 255, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    input{
+        outline-style: none ;
+        border: 2px solid #ccc;
+        border-radius: 30px;
+        padding: 14px 14px;
+        /*max-width: 80%;*/
+        width: min(640px,80vw);
+        font-size: 24px;
+        color: azure;
+        background-color: rgba(0,0,0,0);
+    }
+    #tip {
+        visibility: hidden;
+        margin: 10px;
+        min-width: 200px;
+        text-align: center;
+        color: rgba(255, 250, 240, 0.5);
+    }
+    a:hover{
+        color: lightblue;
+    }
+    a{
+        text-decoration: none;
+        color: rgba(205, 202, 134, 0.5);
+        zoom: 1;
+    }
+</style>
+</html>
