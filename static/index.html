@@ -64,6 +64,9 @@
                     <h2 id="url">https://oez.cc/{{ .id }}</h2>
                 </div>
                 <strong id="tip">Copied.</strong>
+                <div id="qrcode">
+                    <img src="https://wenhairu.com/static/api/qr/?size=250&text=https://oez.cc/{{ .id }}" alt="扫描二维码打开"/>
+                </div>
             {{else}}
                 <form action="/" method="post">
                     <label>
@@ -71,9 +74,6 @@
                     </label>
                 </form>
             {{end}}
-            <div id="qrcode">
-                <img src="https://wenhairu.com/static/api/qr/?size=250&text=https://oez.cc/{{ .id }}" alt="扫描二维码打开"/>
-            </div>
         </div>
         <div id="footer">
             <p>Copyright ©2020
