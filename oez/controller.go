@@ -51,6 +51,7 @@ func GetUrl(c *gin.Context) {
 	url:=Get(id)
 	if url!=nil {
 		c.Redirect(http.StatusFound,url.Url)
+		url.Look()
 	}else {
 		c.String(http.StatusNotFound,"not found.")
 	}

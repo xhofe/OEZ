@@ -26,9 +26,10 @@ func Get(str string) *Url {
 	if result.Error!=nil {
 		return nil
 	}
-	url.Times=url.Times+1
-	go func() {
-		DB.Save(url)
-	}()
 	return &url
+}
+
+func (url *Url) Look() {
+	url.Times+=1
+	DB.Save(url)
 }
