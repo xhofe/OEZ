@@ -6,30 +6,33 @@ import (
 
 type Url struct {
 	gorm.Model
-	Url   		string 	`json:"url" form:"url" gorm:"type:varchar(512)"`
-	Times 		uint
-	ClientIP	string	`gorm:"type:varchar(64)"`
+	Url      string `json:"url" form:"url" gorm:"type:varchar(512)"`
+	Times    uint
+	ClientIP string `gorm:"type:varchar(64)"`
 }
 
-func (url *Url)Create() (uint,error) {
-	result:=DB.Create(url)
-	if result.Error!=nil {
-		return 0,result.Error
+func (url *Url) Create() (uint, error) {
+	result := DB.Create(url)
+	if result.Error != nil {
+		return 0, result.Error
 	}
-	return url.ID,nil
+	return url.ID, nil
 }
 
-func Get(str string) *Url {
-	id:=Decode62To10(str)
+func Get(str string) (*Url, error) {
+	id, err := Decode62To10(str)
+	if err != nil {
+		return nil, err
+	}
 	var url Url
-	result:=DB.First(&url,id)
-	if result.Error!=nil {
-		return nil
+	result := DB.First(&url, id)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-	return &url
+	return &url, nil
 }
 
 func (url *Url) Look() {
-	url.Times+=1
+	url.Times += 1
 	DB.Save(url)
 }

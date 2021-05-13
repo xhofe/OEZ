@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 	"log"
@@ -12,11 +13,11 @@ import (
 
 func InitConf(conf string) bool {
 	if !Exists(conf) {
-		confContent:=`common:
+		confContent := `common:
   debug: true
   listen: 5233
   title: oh,easy!
-  chars: `+RandomStr(CHARS)+`
+  chars: ` + RandomStr(CHARS) + `
 database:
   type: mysql
   user: oez
@@ -25,14 +26,14 @@ database:
   port: 3306
   name: oez
   tablePrefix: oez_`
-		f,err:=CreatNestedFile(conf)
-		if err !=nil {
-			log.Printf("无法创建配置文件,%s",err.Error())
+		f, err := CreatNestedFile(conf)
+		if err != nil {
+			log.Printf("无法创建配置文件,%s", err.Error())
 			return false
 		}
-		_,err=f.WriteString(confContent)
-		if err !=nil {
-			log.Printf("无法写入配置文件,%s",err.Error())
+		_, err = f.WriteString(confContent)
+		if err != nil {
+			log.Printf("无法写入配置文件,%s", err.Error())
 			return false
 		}
 		return true
@@ -46,7 +47,7 @@ var DB *gorm.DB
 func Init() bool {
 	log.Println("初始化数据库连接...")
 	var (
-		db *gorm.DB
+		db  *gorm.DB
 		err error
 	)
 	switch Config.Database.Type {
@@ -58,38 +59,42 @@ func Init() bool {
 			Config.Database.Port,
 			Config.Database.Name)),
 			&gorm.Config{
-			NamingStrategy:schema.NamingStrategy{
+				NamingStrategy: schema.NamingStrategy{
+					TablePrefix: Config.Database.TablePrefix,
+				},
+			})
+	case "sqlite3":
+		db, err = gorm.Open(sqlite.Open(Config.Database.DBFile), &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{
 				TablePrefix: Config.Database.TablePrefix,
 			},
 		})
 	default:
 		log.Printf("不支持数据库类型: %s", Config.Database.Type)
-	}
-	if err !=nil {
-		log.Printf("数据库连接失败,%s",err.Error())
 		return false
 	}
-	DB=db
+	if err != nil {
+		log.Printf("数据库连接失败,%s", err.Error())
+		return false
+	}
+	DB = db
 
 	log.Println("开始进行数据库初始化...")
 	err = DB.AutoMigrate(&Url{})
-	if err !=nil {
-		log.Printf("数据库迁移失败,%s",err.Error())
+	if err != nil {
+		log.Printf("数据库迁移失败,%s", err.Error())
 		return false
 	}
 	return true
 }
 
-func InitGin(r *gin.Engine)  {
-	if !Config.Common.Debug {
-		gin.SetMode(gin.ReleaseMode)
-	}
+func InitGin(r *gin.Engine) {
 	r.Use(cors.Default())
 	r.LoadHTMLGlob("static/*")
 	//r.StaticFile("/static/favicon.ico","static/favicon.ico")
 	r.GET("/", Index)
 	//r.GET("/static/favicon.ico",Favicon)
-	r.POST("/",CreateUrl)
-	r.GET("/:id",GetUrl)
-	r.GET("/:id/json",GetUrlJSON)
+	r.POST("/", CreateUrl)
+	r.GET("/:id", GetUrl)
+	r.GET("/:id/json", GetUrlJSON)
 }

@@ -1,6 +1,7 @@
 package oez
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"math"
@@ -17,7 +18,7 @@ const (
 	// 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 	SCALE = 62
 	REGEX = "^[0-9a-zA-Z]+$"
-	NUM = 6
+	NUM   = 6
 )
 
 func RandomStr(str string) string {
@@ -47,9 +48,9 @@ func Encode10To62(val uint) string {
 	return str
 }
 
-func Decode62To10(val string) uint {
+func Decode62To10(val string) (uint, error) {
 	if match, _ := regexp.MatchString(REGEX, val); !match {
-		panic("input illegal.")
+		return 0, fmt.Errorf("illegal string: %s", val)
 	}
 	var result uint = 0
 	index, length := 0, len(val)
@@ -57,7 +58,7 @@ func Decode62To10(val string) uint {
 		index = strings.Index(CHARS, string(val[i]))
 		result += uint(index * int(math.Pow(float64(SCALE), float64(length-i-1))))
 	}
-	return result
+	return result, nil
 }
 
 // RelativePath 获取相对可执行文件的路径

@@ -6,16 +6,16 @@ import (
 	"log"
 )
 
-var(
-	h	bool
-	i	bool
-	c	string
+var (
+	h bool
+	i bool
+	c string
 )
 
 func init() {
-	flag.BoolVar(&h,"h",false,"show help")
-	flag.BoolVar(&i,"i",false,"install application")
-	flag.StringVar(&c,"c","oez.yml","config file")
+	flag.BoolVar(&h, "h", false, "show help")
+	flag.BoolVar(&i, "i", false, "install application")
+	flag.StringVar(&c, "c", "oez.yml", "config file")
 }
 
 func Run() {
@@ -31,7 +31,7 @@ func Run() {
 	server()
 }
 
-func install()  {
+func install() {
 	if !InitConf(c) {
 		return
 	}
@@ -51,8 +51,6 @@ func printASC() {
 `)
 }
 
-
-
 func server() {
 	printASC()
 	if !ReadConf(c) {
@@ -61,12 +59,15 @@ func server() {
 	if !Init() {
 		return
 	}
-	baseServer:="0.0.0.0:"+Config.Common.Listen
-	log.Printf("Starting server @ %s",baseServer)
-	r:=gin.Default()
+	baseServer := "0.0.0.0:" + Config.Common.Listen
+	log.Printf("Starting server @ %s", baseServer)
+	if !Config.Common.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	r := gin.Default()
 	InitGin(r)
-	err:=r.Run(baseServer)
-	if err!=nil {
-		log.Print("Server failed start.\n"+err.Error())
+	err := r.Run(baseServer)
+	if err != nil {
+		log.Print("Server failed start.\n" + err.Error())
 	}
 }

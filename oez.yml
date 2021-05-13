@@ -1,13 +1,14 @@
 common:
-  debug: true
+  debug: false
   listen: 5233
   title: oh,easy!
   chars: kvmDVOgI6p7wsy3jYnPeXU5lfMZBQHAqJKC0aFioxhLTGbzE9cWdSuN1r82R4t
 database:
-  type: mysql
+  type: sqlite3
   user: oez
   password: 123456
   host: tx.xhofe.top
   port: 3306
   name: oez
   tablePrefix: oez_
+  dBFile: oez.db
